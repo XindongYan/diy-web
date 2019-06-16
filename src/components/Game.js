@@ -1,6 +1,5 @@
 import React from 'react';
-import { Card, List, Avatar } from 'antd';
-import { getGoods } from '../services/xiamiServer';
+import { Card, List } from 'antd';
 
 export default class Game extends React.PureComponent {
 
@@ -3346,26 +3345,24 @@ export default class Game extends React.PureComponent {
 					]
 				}
 			]
-		},
+    },
+    gameName: '荒野行动'
 	}
 
 	componentDidMount() {
-		getGoods(this.state.current).then(res => {
-			console.log(res)
-		})
-	}
 
-	handleClick = (info) => {
+  }
+
+	handleClick = (info, item) => {
 		const key = '' + info;
 		this.setState({
-			currentSelect: key
+      currentSelect: key,
+      gameName: item.name
 		})
 	}
 
 	render() {
-		const { games, products, currentSelect } = this.state;
-
-		console.log(products[currentSelect])
+		const { games, products, currentSelect, gameName } = this.state;
 
 		return (
 			<div>
@@ -3374,10 +3371,11 @@ export default class Game extends React.PureComponent {
 					dataSource={games.data}
 					renderItem={(item, index) => (
 						<List.Item>
-							<div onClick={e => this.handleClick(index + 1)} style={{ margin: 0, padding: 0, borderRadius: 8, overflow: 'hidden' }}><a><img style={{ height: 130, width: '100%' }} src={item.icon} /></a></div>
+							<div onClick={e => this.handleClick(index + 1, item)} style={{ margin: 0, padding: 0, borderRadius: 8, overflow: 'hidden' }}><a><img style={{ height: 130, width: '100%' }} src={item.icon} alt="img" /></a></div>
 						</List.Item>
 					)}
-				/>,
+				/>
+        <p style={{ height: 20 }}>当前游戏：{gameName}</p>
 				<List
 					grid={{ gutter: 16, column: 3 }}
 					dataSource={products[currentSelect]}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Divider, Tag } from 'antd';
+import { Table, Tag, message } from 'antd';
 
 export default class News extends React.PureComponent {
 
@@ -56,10 +56,15 @@ export default class News extends React.PureComponent {
 				name: '键盘',
 				good: ''
 			}
-		],
+    ],
+    localGoods: []
 	}
 
 	componentDidMount() {
+    const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
+    this.setState({
+      localGoods: localGoodsParse
+    })
 	}
 
 	handleClick = (info) => {
@@ -67,91 +72,100 @@ export default class News extends React.PureComponent {
 		this.setState({
 			current: info.key
 		})
-	}
+  }
+
+  cutGoods = (info) => {
+    const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
+    const goods = [];
+
+    for (const e of localGoodsParse) {
+      if (e._id !== info._id) {
+        goods.push(e);
+      };
+    };
+
+    try {
+      localStorage.setItem('goods', JSON.stringify(goods));
+      this.setState({
+        localGoods: goods
+      })
+      message.success('移除成功')
+    } catch (error) {
+      message.error(error.message)
+    }
+  }
 
 	render() {
-		const { current, template } = this.state;
+		const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
 
 		const columns = [
 			{
 				title: '类型',
 				dataIndex: 'name',
 				key: 'name',
-				render: text => <a href="javascript:;">{text}</a>,
+				render: text => <a href="">{text}</a>,
+      },
+			{
+				title: '型号',
+				dataIndex: 'title',
+				key: 'title',
+      },
+      {
+				title: '价格',
+				dataIndex: 'price',
+				key: 'price',
+				render: text => <a href="" style={{ color: '#DC143C', fontWeight: 'bold' }}>￥{text}</a>
+			},
+      {
+        title: '图片',
+        dataIndex: 'img',
+        key: 'img',
+        render: text => <img src={`http://127.0.0.1:3000${text}`} style={{ width: 100 }} alt='img' />
+      },
+			{
+				title: '标签',
+				key: 'params',
+				dataIndex: 'params',
+				render: tags => (
+					<span>
+						{tags.map(tag => {
+							let color = 'geekblue';
+							if (tag === 'loser') {
+								color = 'volcano';
+							}
+							return (
+								<Tag color={color} key={tag.name}>
+									{`${tag.name}: ${tag.value}`}
+								</Tag>
+							);
+						})}
+					</span>
+				),
 			},
 			{
-				title: '选中',
-				dataIndex: 'age',
-				key: 'age',
-			},
-			{
-				title: 'Address',
-				dataIndex: 'address',
-				key: 'address',
-			},
-			{
-				title: 'Tags',
-				key: 'tags',
-				dataIndex: 'tags',
-				// render: tags => (
-				// 	<span>
-				// 		{tags.map(tag => {
-				// 			let color = tag.length > 5 ? 'geekblue' : 'green';
-				// 			if (tag === 'loser') {
-				// 				color = 'volcano';
-				// 			}
-				// 			return (
-				// 				<Tag color={color} key={tag}>
-				// 					{tag.toUpperCase()}
-				// 				</Tag>
-				// 			);
-				// 		})}
-				// 	</span>
-				// ),
-			},
-			{
-				title: 'Action',
+				title: '操作',
 				key: 'action',
 				render: (text, record) => (
 					<span>
-						<a href="javascript:;">Invite {record.name}</a>
-						<Divider type="vertical" />
-						<a href="javascript:;">Delete</a>
+						<a href="" onClick={e => this.cutGoods(text)}>移除</a>
 					</span>
 				),
 			},
 		];
 
-		const data = [
-			{
-				key: '1',
-				name: 'John Brown',
-				age: 32,
-				address: 'New York No. 1 Lake Park',
-				tags: ['nice', 'developer'],
-			},
-			{
-				key: '2',
-				name: 'Jim Green',
-				age: 42,
-				address: 'London No. 1 Lake Park',
-				tags: ['loser'],
-			},
-			{
-				key: '3',
-				name: 'Joe Black',
-				age: 32,
-				address: 'Sidney No. 1 Lake Park',
-				tags: ['cool', 'teacher'],
-			},
-		];
+    console.log(localGoodsParse)
 
 		return (
 			<div>
-				<Table pagination={false} columns={columns} dataSource={this.state.template.map((e, index) => {
+				<Table pagination={false} columns={columns} dataSource={localGoodsParse.map((e, index) => {
 					return {
-						key: String(index + 1),
-						name: e.name,
+            key: String(index + 1),
+            _id: e._id,
+            name: e.type,
+            price: e.price,
+            title: e.name,
+            img: e.img,
+            params: e.params
 					}
 				})} />
 			</div>

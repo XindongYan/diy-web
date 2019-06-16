@@ -14,6 +14,7 @@ function RouterConfig({ history }) {
         <Route path="/game" exact component={Game} />
         <Route path="/diy" exact component={Diy} />
         <Route path="/machine" exact component={Machine} />
+        <Route path="/index" exact component={IndexPage} />
         <Route path="/" exact component={IndexPage} />
       </Switch>
     </Router>

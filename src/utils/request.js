@@ -24,7 +24,7 @@ function checkStatus(response) {
 export default function request(url, options) {
   console.log(url);
   console.log(options);
-  return fetch('https://www.xiamitt.xyz' + url, options)
+  return fetch('http://127.0.0.1:3000' + url, options)
     .then(checkStatus)
     .then(parseJSON)
     .then(data => ({ data }))

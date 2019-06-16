@@ -4,10 +4,9 @@ import { Card } from 'antd';
 export default class My extends React.PureComponent {
 
 	render() {
-
 		return (
 			<Card>
-				jh
+				您的清单
 			</Card>
 		)
 	}

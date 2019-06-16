@@ -22,13 +22,13 @@ export default class Index extends React.PureComponent {
           <div className="logo">
             <img style={{ float: "left", height: 60 }} src="../public/logo.png" alt="logo" />
           </div>
-          
+
           <Menus />
 
         </Header>
 
         <Content style={{ padding: 70, marginTop: 30, minHeight: document.documentElement.clientHeight - 100 }}>
-          {/* <My /> */}
+          <My />
         </Content>
 
         <Footer >Xiami 2019</Footer>

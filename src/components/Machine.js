@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Menu, Table, Divider, Tag } from 'antd';
+import { Card, Menu, Table, Tag, message } from 'antd';
 import { getGoods } from '../services/xiamiServer';
 
 export default class News extends React.PureComponent {
@@ -57,56 +57,121 @@ export default class News extends React.PureComponent {
         good: ''
       }
     ],
+    products: [],
+    localGoods: []
 	}
 
 	componentDidMount() {
 		getGoods(this.state.current).then(res => {
-			console.log(res)
+      const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
+      this.setState({
+        products: res.data,
+        localGoods: localGoodsParse
+      })
 		})
 	}
 
 	handleClick = (info) => {
 		// console.log(info.key)
-		this.setState({
-			current: info.key
+    getGoods(info.key).then(res => {
+      this.setState({
+        products: res.data,
+        current: info.key
+      })
 		})
-	}
+  }
+
+  cutGoods = (text, record) => {
+    const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
+    const localGoods = [];
+
+    for (const e of localGoodsParse) {
+      if (e._id !== text._id) {
+        localGoods.push(e);
+      };
+    };
+
+    try {
+      localStorage.setItem('goods', JSON.stringify(localGoods));
+      this.setState({
+        localGoods
+      })
+      message.success('删除成功');
+    } catch (error) {
+      message.error(error.message);
+    };
+
+  }
+
+  addGoods = (text, record) => {
+    // console.log(text)
+    const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
+    const localGoods = [];
+
+    for (const e of localGoodsParse) {
+      if (e.type === text.type) {
+        return null;
+      } else {
+        localGoods.push(e);
+      };
+    };
+
+    localGoods.push(text);
+
+    try {
+      localStorage.setItem('goods', JSON.stringify(localGoods));
+      this.setState({
+        localGoods
+      })
+      message.success('添加成功');
+    } catch (error) {
+      message.error(error.message);
+    };
+
+  }
 
 	render() {
-		const { current, template } = this.state;
+    const { current, template } = this.state;
+    const goods = [];
+
+    const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
+    for (const e of localGoodsParse) {
+      goods.push(e._id)
+    }
 
 		const columns = [
 			{
 				title: '型号',
 				dataIndex: 'name',
 				key: 'name',
-				render: text => <a href="javascript:;">{text}</a>,
+				render: text => <a href="">{text}</a>,
 			},
 			{
 				title: '价格',
-				dataIndex: 'age',
-				key: 'age',
-				render: text => <a href="">￥{text}</a>
+				dataIndex: 'price',
+				key: 'price',
+				render: text => <a href="" style={{ color: '#DC143C', fontWeight: 'bold' }}>￥{text}</a>
 			},
 			{
 				title: '图片',
-				dataIndex: 'image',
-				key: 'image',
+				dataIndex: 'img',
+        key: 'img',
+        render: text => <img src={`http://127.0.0.1:3000${text}`} style={{ width: 100 }} alt='img' />
 			},
 			{
 				title: '标签',
-				key: 'tags',
-				dataIndex: 'tags',
+				key: 'params',
+				dataIndex: 'params',
 				render: tags => (
 					<span>
 						{tags.map(tag => {
-							let color = tag.length > 5 ? 'geekblue' : 'green';
+							let color = 'geekblue';
 							if (tag === 'loser') {
 								color = 'volcano';
 							}
 							return (
-								<Tag color={color} key={tag}>
-									{tag.toUpperCase()}
+								<Tag color={color} key={tag.name}>
+									{`${tag.name}: ${tag.value}`}
 								</Tag>
 							);
 						})}
@@ -118,43 +183,26 @@ export default class News extends React.PureComponent {
 				key: 'action',
 				render: (text, record) => (
 					<span>
-						<a href="javascript:;">添加</a>
+            {
+              goods.indexOf(text._id) !== -1 ?
+              <a href="" onClick={e => this.cutGoods(text, record)}>{goods.indexOf(text._id) !== -1 ? '取消' : ''}</a> :
+              <a href="" onClick={e => this.addGoods(text, record)}>{goods.indexOf(text._id) !== -1 ? '' : '添加'}</a>
+            }
+
 					</span>
 				),
 			},
-		];
-		
-		const data = [
-			{
-				key: '1',
-				name: 'John Brown',
-				age: 32,
-				address: 'New York No. 1 Lake Park',
-				tags: ['nice', 'developer'],
-			},
-			{
-				key: '2',
-				name: 'Jim Green',
-				age: 42,
-				address: 'London No. 1 Lake Park',
-				tags: ['loser'],
-			},
-			{
-				key: '3',
-				name: 'Joe Black',
-				age: 32,
-				address: 'Sidney No. 1 Lake Park',
-				tags: ['cool', 'teacher'],
-			},
-		];
+    ];
+
+    const { products } = this.state;
 
 		return (
 			<div>
-				<Card style={{ height: 650 }}>
+				<Card style={{ minHeight: 970 }}>
 					<Menu onClick={this.handleClick} selectedKeys={[current]} mode="inline" style={{ width: 100, height: 0 }}>
 						{template.map((e) => <Menu.Item key={e.name}>{e.name}</Menu.Item>)}
 					</Menu>
-					<Table style={{ width: '85%', marginLeft: 150 }} columns={columns} dataSource={data} />
+					<Table style={{ width: '85%', marginLeft: 150 }} columns={columns} dataSource={products} />
 				</Card>
 			</div>
 		)

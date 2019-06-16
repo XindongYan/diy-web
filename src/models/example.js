@@ -8,6 +8,7 @@ export default {
     textArray: [],
     searchValue: '',
     carousel: [],
+    menuCurrent: 'index'
   },
 
   subscriptions: {
@@ -25,6 +26,10 @@ export default {
     },
     *getCarousel({ payload }, { call, put }) {
       yield put ({ type: 'carousel', payload })
+    },
+    *menuCurrentChange({ payload, callback }, { call, put }) {
+      yield put({ type: 'menuCurrent', payload })
+      if (callback) callback()
     }
   },
 
@@ -44,6 +49,13 @@ export default {
       return {
         ...state,
         carousel: action.payload.result
+      }
+    },
+
+    menuCurrent(state, action) {
+      return {
+        ...state,
+        menuCurrent: action.payload
       }
     }
   },
