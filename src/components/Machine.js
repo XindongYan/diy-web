@@ -104,7 +104,6 @@ export default class News extends React.PureComponent {
   }
 
   addGoods = (text, record) => {
-    // console.log(text)
     const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
     const localGoods = [];
 
@@ -185,8 +184,8 @@ export default class News extends React.PureComponent {
 					<span>
             {
               goods.indexOf(text._id) !== -1 ?
-              <a href="" onClick={e => this.cutGoods(text, record)}>{goods.indexOf(text._id) !== -1 ? '取消' : ''}</a> :
-              <a href="" onClick={e => this.addGoods(text, record)}>{goods.indexOf(text._id) !== -1 ? '' : '添加'}</a>
+              <a onClick={e => this.cutGoods(text, record)}>{goods.indexOf(text._id) !== -1 ? '取消' : ''}</a> :
+              <a onClick={e => this.addGoods(text, record)}>{goods.indexOf(text._id) !== -1 ? '' : '添加'}</a>
             }
 
 					</span>

@@ -57,13 +57,19 @@ export default class News extends React.PureComponent {
 				good: ''
 			}
     ],
-    localGoods: []
+    localGoods: [],
+    price: 0
 	}
 
 	componentDidMount() {
     const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
+    let price = 0;
+    for (const l of localGoodsParse) {
+      price += Number(l.price)
+    }
     this.setState({
-      localGoods: localGoodsParse
+      localGoods: localGoodsParse,
+      price
     })
 	}
 
@@ -77,6 +83,7 @@ export default class News extends React.PureComponent {
   cutGoods = (info) => {
     const localGoodsParse = JSON.parse(localStorage.getItem('goods'));
     const goods = [];
+    let price = 0;
 
     for (const e of localGoodsParse) {
       if (e._id !== info._id) {
@@ -84,10 +91,15 @@ export default class News extends React.PureComponent {
       };
     };
 
+    for (const e of goods) {
+      price += Number(e.price);
+    };
+
     try {
       localStorage.setItem('goods', JSON.stringify(goods));
       this.setState({
-        localGoods: goods
+        localGoods: goods,
+        price
       })
       message.success('移除成功')
     } catch (error) {
@@ -147,13 +159,13 @@ export default class News extends React.PureComponent {
 				key: 'action',
 				render: (text, record) => (
 					<span>
-						<a href="" onClick={e => this.cutGoods(text)}>移除</a>
+						<a onClick={e => this.cutGoods(text)}>移除</a>
 					</span>
 				),
 			},
 		];
 
-    console.log(localGoodsParse)
+    const { price } = this.state;
 
 		return (
 			<div>
@@ -168,6 +180,7 @@ export default class News extends React.PureComponent {
             params: e.params
 					}
 				})} />
+        <h3 style={{ fontWeight: 'bold' }}>总价：<span style={{ color: '#DC143C' }}>{price}</span></h3>
 			</div>
 		)
 	}

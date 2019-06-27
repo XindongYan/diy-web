@@ -7,5 +7,9 @@ export function getGoods(params) {
 }
 
 export function getText(params) {
-  return request(`/api/getText1?type=0`)
+  return request(`/api/getText1?type=${params}`)
+}
+
+export function getTextById(params) {
+  return request(`/api/query1?id=${params}`)
 }

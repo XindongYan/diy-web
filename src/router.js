@@ -5,11 +5,13 @@ import Machine from './routes/Machine';
 import Diy from './routes/Diy';
 import Game from './routes/Game';
 import My from './routes/My';
+import News from './routes/News';
 
 function RouterConfig({ history }) {
   return (
     <Router history={history}>
       <Switch>
+        <Route path="/news" exact component={News} />
         <Route path="/me" exact component={My} />
         <Route path="/game" exact component={Game} />
         <Route path="/diy" exact component={Diy} />
